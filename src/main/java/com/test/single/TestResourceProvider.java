@@ -39,7 +39,7 @@ public class TestResourceProvider implements RealmResourceProvider {
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     public Response hi(@PathParam("realm") String realmName) {
-        new SecurityCheck(session);
+        new SecurityCheck(session, false);
         return Response.ok("hi " + realmName).build();
     }
 

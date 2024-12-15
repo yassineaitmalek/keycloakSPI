@@ -36,7 +36,7 @@ public class UserResourceProvider implements RealmResourceProvider {
     @Path("/users/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUser(@PathParam("id") String id) {
-        new SecurityCheck(session);
+        new SecurityCheck(session, true);
         UserService userService = new UserService(session);
         return Response.ok(userService.getUserById(id)).build();
     }
@@ -45,7 +45,7 @@ public class UserResourceProvider implements RealmResourceProvider {
     @Path("/users/username/{username}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserByUserName(@PathParam("username") String username) {
-        new SecurityCheck(session);
+        new SecurityCheck(session, true);
         UserService userService = new UserService(session);
         return Response.ok(userService.getUserByUserName(username)).build();
     }
