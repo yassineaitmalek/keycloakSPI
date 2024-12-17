@@ -41,13 +41,4 @@ public class RoleResourceProvider implements RealmResourceProvider {
         return Response.ok(roleService.getRoleByUserId(id)).build();
     }
 
-    @GET
-    @Path("/roles/username/{username}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getRolesByUsername(@PathParam("username") String username) {
-        new SecurityCheck(session, true);
-        RoleService roleService = new RoleService(session);
-        return Response.ok(roleService.getRoleByUserName(username)).build();
-    }
-
 }

@@ -1,7 +1,5 @@
 package com.test.single;
 
-import java.util.function.Supplier;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -53,30 +51,12 @@ public class TestResourceProvider implements RealmResourceProvider {
     }
 
     @GET
-    @Path("/users/username/{username}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserByUserName(@PathParam("username") String username) {
-
-        UserService userService = new UserService(session);
-        return Response.ok(userService.getUserByUserName(username)).build();
-    }
-
-    @GET
     @Path("/users/roles/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRoles(@PathParam("id") String id) {
 
         RoleService roleService = new RoleService(session);
         return Response.ok(roleService.getRoleByUserId(id)).build();
-    }
-
-    @GET
-    @Path("/users/username/roles/{username}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getRolesByUsername(@PathParam("username") String username) {
-
-        RoleService roleService = new RoleService(session);
-        return Response.ok(roleService.getRoleByUserName(username)).build();
     }
 
 }

@@ -41,13 +41,4 @@ public class UserResourceProvider implements RealmResourceProvider {
         return Response.ok(userService.getUserById(id)).build();
     }
 
-    @GET
-    @Path("/users/username/{username}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserByUserName(@PathParam("username") String username) {
-        new SecurityCheck(session, true);
-        UserService userService = new UserService(session);
-        return Response.ok(userService.getUserByUserName(username)).build();
-    }
-
 }
