@@ -1,8 +1,8 @@
 package com.test.multiple.providers;
 
 import com.test.security.SecurityCheck;
+import com.test.services.GroupService;
 import com.test.services.KeycloakSessionWrapper;
-import com.test.services.RoleService;
 import java.util.HashSet;
 import java.util.Set;
 import javax.ws.rs.GET;
@@ -13,17 +13,17 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.GroupRepresentation;
 import org.keycloak.services.resource.RealmResourceProvider;
 
 @RequiredArgsConstructor
-public class RoleResourceProvider implements RealmResourceProvider {
+public class GroupResourceProvider implements RealmResourceProvider {
 
-    private static final String SUB_PATH = "/roles";
+    private static final String SUB_PATH = "/groups";
 
     private final KeycloakSession session;
 
-    private final RoleService roleService;
+    private final GroupService groupService;
 
     @Override
     public void close() {
@@ -39,26 +39,26 @@ public class RoleResourceProvider implements RealmResourceProvider {
     @GET
     @Path(SUB_PATH)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllRoles() {
+    public Response getAllGroups() {
         KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
         SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
         securityCheck.logUser();
         securityCheck.shouldAuthenticate();
         securityCheck.hasAllRoles(new HashSet<>());
-        Set<RoleRepresentation> roles = roleService.getAll(sessionWrapper);
-        return Response.ok(roles).build();
+        Set<GroupRepresentation> groups = groupService.getAll(sessionWrapper);
+        return Response.ok(groups).build();
     }
 
     @GET
     @Path(SUB_PATH + "/user/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserRoles(@PathParam("id") String id) {
+    public Response getUserGroups(@PathParam("id") String id) {
         KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
         SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
         securityCheck.logUser();
         securityCheck.shouldAuthenticate();
         securityCheck.hasAllRoles(new HashSet<>());
-        Set<RoleRepresentation> roles = roleService.getByUserId(sessionWrapper, id);
-        return Response.ok(roles).build();
+        Set<GroupRepresentation> groups = groupService.getByUserId(sessionWrapper, id);
+        return Response.ok(groups).build();
     }
 }

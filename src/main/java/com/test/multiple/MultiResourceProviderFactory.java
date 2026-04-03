@@ -8,36 +8,35 @@ import org.keycloak.services.resource.RealmResourceProviderFactory;
 
 public class MultiResourceProviderFactory implements RealmResourceProviderFactory {
 
-  public static final String ID = "test-multiple-providers";
+    public static final String ID = "test-multiple-providers";
 
-  @Override
-  public RealmResourceProvider create(KeycloakSession session) {
-    return new MultiResourceProviderSwitcher(session);
-  }
+    @Override
+    public RealmResourceProvider create(KeycloakSession session) {
+        return new MultiResourceProviderSwitcher(session);
+    }
 
-  @Override
-  public void init(Scope config) {
-    //
-  }
+    @Override
+    public void init(Scope config) {
+        //
+    }
 
-  @Override
-  public void postInit(KeycloakSessionFactory factory) {
-    // Additional post-initialization logic if needed
-  }
+    @Override
+    public void postInit(KeycloakSessionFactory factory) {
+        // Additional post-initialization logic if needed
+    }
 
-  @Override
-  public void close() {
-    //
-  }
+    @Override
+    public void close() {
+        //
+    }
 
-  @Override
-  public String getId() {
-    return ID;
-  }
+    @Override
+    public String getId() {
+        return ID;
+    }
 
-  @Override
-  public int order() {
-    return 0;
-  }
-
+    @Override
+    public int order() {
+        return 0;
+    }
 }
