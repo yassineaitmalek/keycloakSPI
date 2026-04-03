@@ -1,8 +1,8 @@
-package com.test.services;
+package com.test.keyclock.spi.services;
 
-import com.test.dto.UserDTO;
-import com.test.models.UserDetails;
-import com.test.security.SecurityCheck;
+import com.test.keyclock.spi.dto.UserDTO;
+import com.test.keyclock.spi.models.UserDetails;
+import com.test.keyclock.spi.security.SecurityCheck;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;

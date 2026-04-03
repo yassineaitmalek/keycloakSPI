@@ -1,1 +1,1 @@
-com.test.multiple.MultiResourceProviderFactory
+com.test.keyclock.spi.provider.ResourceProviderFactory

@@ -1,6 +1,6 @@
-package com.test.services;
+package com.test.keyclock.spi.services;
 
-import com.test.dto.RoleDTO;
+import com.test.keyclock.spi.dto.RoleDTO;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;

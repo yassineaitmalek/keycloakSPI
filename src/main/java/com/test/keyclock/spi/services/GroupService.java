@@ -1,6 +1,6 @@
-package com.test.services;
+package com.test.keyclock.spi.services;
 
-import com.test.dto.GroupDTO;
+import com.test.keyclock.spi.dto.GroupDTO;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.keycloak.models.GroupModel;
@@ -68,6 +68,14 @@ public class GroupService {
         GroupModel group = realmModel.getGroupById(id);
         Objects.requireNonNull(group, "Group not found for ID: " + id);
         realmModel.removeGroup(group);
+    }
+
+    public GroupRepresentation getById(KeycloakSessionWrapper sessionWrapper, String id) {
+        Objects.requireNonNull(id);
+        RealmModel realmModel = sessionWrapper.getRealmModel();
+        GroupModel groupModel = realmModel.getGroupById(id);
+        Objects.requireNonNull(groupModel, "Group not found for ID: " + id);
+        return ModelToRepresentation.toRepresentation(groupModel, true);
     }
 
     public void removeUser(KeycloakSessionWrapper sessionWrapper, String groupId, String userId) {

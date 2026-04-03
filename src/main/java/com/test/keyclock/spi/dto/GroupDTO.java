@@ -1,4 +1,4 @@
-package com.test.dto;
+package com.test.keyclock.spi.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.test.models.constants;
+package com.test.keyclock.spi.models.constants;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Arrays;

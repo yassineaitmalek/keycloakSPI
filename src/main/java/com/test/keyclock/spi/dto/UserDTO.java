@@ -1,21 +1,28 @@
-package com.test.models;
+package com.test.keyclock.spi.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.test.models.constants.Gender;
+import com.test.keyclock.spi.models.constants.Gender;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.keycloak.representations.idm.UserRepresentation;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDetails {
+public class UserDTO {
 
-    private UserRepresentation userRepresentation;
+    private String username;
+
+    private String password;
+
+    private String firstName;
+
+    private String lastName;
+
+    private String email;
 
     private String mobile;
 

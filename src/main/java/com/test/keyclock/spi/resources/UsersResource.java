@@ -1,9 +1,9 @@
-package com.test.multiple.providers;
+package com.test.keyclock.spi.resources;
 
-import com.test.models.UserDetails;
-import com.test.security.SecurityCheck;
-import com.test.services.KeycloakSessionWrapper;
-import com.test.services.UserService;
+import com.test.keyclock.spi.models.UserDetails;
+import com.test.keyclock.spi.security.SecurityCheck;
+import com.test.keyclock.spi.services.KeycloakSessionWrapper;
+import com.test.keyclock.spi.services.UserService;
 import java.util.HashSet;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -16,7 +16,7 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.services.resource.RealmResourceProvider;
 
 @RequiredArgsConstructor
-public class UserResourceProvider implements RealmResourceProvider {
+public class UsersResource implements RealmResourceProvider {
 
     private static final String SUB_PATH = "/users";
 

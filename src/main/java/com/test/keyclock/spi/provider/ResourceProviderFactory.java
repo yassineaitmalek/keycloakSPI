@@ -1,4 +1,4 @@
-package com.test.multiple;
+package com.test.keyclock.spi.provider;
 
 import org.keycloak.Config.Scope;
 import org.keycloak.models.KeycloakSession;
@@ -6,13 +6,13 @@ import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.services.resource.RealmResourceProvider;
 import org.keycloak.services.resource.RealmResourceProviderFactory;
 
-public class MultiResourceProviderFactory implements RealmResourceProviderFactory {
+public class ResourceProviderFactory implements RealmResourceProviderFactory {
 
     public static final String ID = "test-multiple-providers";
 
     @Override
     public RealmResourceProvider create(KeycloakSession session) {
-        return new MultiResourceProviderSwitcher(session);
+        return new ResourceProviderSwitcher(session);
     }
 
     @Override

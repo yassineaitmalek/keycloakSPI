@@ -1,4 +1,4 @@
-package com.test.services;
+package com.test.keyclock.spi.services;
 
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;

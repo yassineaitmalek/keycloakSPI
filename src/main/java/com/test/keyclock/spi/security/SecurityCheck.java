@@ -1,6 +1,6 @@
-package com.test.security;
+package com.test.keyclock.spi.security;
 
-import com.test.services.KeycloakSessionWrapper;
+import com.test.keyclock.spi.services.KeycloakSessionWrapper;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;

@@ -1,11 +1,11 @@
-package com.test.multiple;
+package com.test.keyclock.spi.provider;
 
-import com.test.multiple.providers.GroupResourceProvider;
-import com.test.multiple.providers.RoleResourceProvider;
-import com.test.multiple.providers.UserResourceProvider;
-import com.test.services.GroupService;
-import com.test.services.RoleService;
-import com.test.services.UserService;
+import com.test.keyclock.spi.resources.GroupsResource;
+import com.test.keyclock.spi.resources.RolesResource;
+import com.test.keyclock.spi.resources.UsersResource;
+import com.test.keyclock.spi.services.GroupService;
+import com.test.keyclock.spi.services.RoleService;
+import com.test.keyclock.spi.services.UserService;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.models.KeycloakContext;
@@ -14,7 +14,7 @@ import org.keycloak.models.KeycloakUriInfo;
 import org.keycloak.services.resource.RealmResourceProvider;
 
 @RequiredArgsConstructor
-public class MultiResourceProviderSwitcher implements RealmResourceProvider {
+public class ResourceProviderSwitcher implements RealmResourceProvider {
 
     private final KeycloakSession session;
 
@@ -24,11 +24,11 @@ public class MultiResourceProviderSwitcher implements RealmResourceProvider {
         String subPath = getSubPath();
         switch (subPath) {
             case "users":
-                return new UserResourceProvider(session, UserService.getInstance());
+                return new UsersResource(session, UserService.getInstance());
             case "roles":
-                return new RoleResourceProvider(session, RoleService.getInstance());
+                return new RolesResource(session, RoleService.getInstance());
             case "groups":
-                return new GroupResourceProvider(session, GroupService.getInstance());
+                return new GroupsResource(session, GroupService.getInstance());
             default:
                 throw new RuntimeException("Resource not found: " + subPath);
         }
