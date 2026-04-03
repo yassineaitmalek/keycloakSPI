@@ -1,6 +1,5 @@
 package com.test.keyclock.spi.resources;
 
-import com.test.keyclock.spi.models.UserDetails;
 import com.test.keyclock.spi.security.SecurityCheck;
 import com.test.keyclock.spi.services.KeycloakSessionWrapper;
 import com.test.keyclock.spi.services.UserService;
@@ -16,7 +15,7 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.services.resource.RealmResourceProvider;
 
 @RequiredArgsConstructor
-public class UsersResource implements RealmResourceProvider {
+public class UsersResource implements RealmResourceProvider, AbstractResource {
 
     private static final String SUB_PATH = "/users";
 
@@ -31,7 +30,7 @@ public class UsersResource implements RealmResourceProvider {
 
     // /auth/realms/{realm}/{ID}/users
     @Override
-    public Object getResource() {
+    public RealmResourceProvider getResource() {
         return this;
     }
 
@@ -44,7 +43,6 @@ public class UsersResource implements RealmResourceProvider {
         securityCheck.logUser();
         securityCheck.shouldAuthenticate();
         securityCheck.hasAllRoles(new HashSet<>());
-        UserDetails user = userService.getById(sessionWrapper, id);
-        return Response.ok(user).build();
+        return ok(() -> userService.getById(sessionWrapper, id));
     }
 }

@@ -76,6 +76,14 @@ public class RoleService {
         realmModel.removeRole(role);
     }
 
+    public RoleRepresentation getById(KeycloakSessionWrapper sessionWrapper, String id) {
+        Objects.requireNonNull(id);
+        RealmModel realmModel = sessionWrapper.getRealmModel();
+        RoleModel role = realmModel.getRoleById(id);
+        Objects.requireNonNull(role, "Role not found for ID: " + id);
+        return ModelToRepresentation.toRepresentation(role);
+    }
+
     public void revokeFromUser(KeycloakSessionWrapper sessionWrapper, String roleId, String userId) {
         Objects.requireNonNull(userId);
         Objects.requireNonNull(roleId);

@@ -27,7 +27,7 @@ public class GroupsResource implements RealmResourceProvider, AbstractResource {
 
     // /auth/realms/{realm}/{ID}/roles
     @Override
-    public Object getResource() {
+    public RealmResourceProvider getResource() {
         return this;
     }
 
