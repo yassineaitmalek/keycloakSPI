@@ -1,5 +1,6 @@
 package com.test.keyclock.spi.resources;
 
+
 import com.test.keyclock.spi.security.SecurityCheck;
 import com.test.keyclock.spi.services.KeycloakSessionWrapper;
 import com.test.keyclock.spi.services.UserService;
@@ -14,35 +15,37 @@ import lombok.RequiredArgsConstructor;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.services.resource.RealmResourceProvider;
 
+
 @RequiredArgsConstructor
 public class UsersResource implements RealmResourceProvider, AbstractResource {
 
-    private static final String SUB_PATH = "/users";
+	private static final String SUB_PATH = "/users";
 
-    private final KeycloakSession session;
+	private final KeycloakSession session;
 
-    private final UserService userService;
+	private final UserService userService;
 
-    @Override
-    public void close() {
-        //
-    }
+	@Override
+	public void close() {
+		//
+	}
 
-    // /auth/realms/{realm}/{ID}/users
-    @Override
-    public RealmResourceProvider getResource() {
-        return this;
-    }
+	// /auth/realms/{realm}/{ID}/users
+	@Override
+	public RealmResourceProvider getResource() {
+		return this;
+	}
 
-    @GET
-    @Path(SUB_PATH + "/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getUser(@PathParam("id") String id) {
-        KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
-        SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
-        securityCheck.logUser();
-        securityCheck.shouldAuthenticate();
-        securityCheck.hasAllRoles(new HashSet<>());
-        return ok(() -> userService.getById(sessionWrapper, id));
-    }
+	@GET
+	@Path( SUB_PATH + "/{id}" )
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response getUser(@PathParam( "id" ) String id) {
+		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
+		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
+		securityCheck.logUser();
+		securityCheck.shouldAuthenticate();
+		securityCheck.hasAllRoles(new HashSet<>());
+		return ok(() -> userService.getById(sessionWrapper, id));
+	}
+
 }

@@ -1,6 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <!--
     <parent>
         <groupId>org.keycloak</groupId>
@@ -109,19 +109,30 @@
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>2.43.0</version>
                 <configuration>
+                    <!--
+                        <java>
+                            <prettier>
+                                <devDependencies>
+                                    <prettier>2.8.8</prettier>
+                                    <prettier-plugin-java>2.1.0</prettier-plugin-java>
+                                </devDependencies>
+                                <config>
+                                    <tabWidth>4</tabWidth>
+                                    <printWidth>120</printWidth>
+                                </config>
+                            </prettier>
+                            <removeUnusedImports/>
+                            <importOrder/>
+                        </java>
+                    -->
                     <java>
-                        <prettier>
-                            <devDependencies>
-                                <prettier>2.8.8</prettier>
-                                <prettier-plugin-java>2.1.0</prettier-plugin-java>
-                            </devDependencies>
-                            <config>
-                                <tabWidth>4</tabWidth>
-                                <printWidth>120</printWidth>
-                            </config>
-                        </prettier>
-                        <removeUnusedImports />
-                        <importOrder />
+                        <eclipse>
+                            <file>${project.basedir}/format-rules.xml</file>
+                        </eclipse>
+                        <removeUnusedImports/>
+                        <importOrder>
+                            <order></order>
+                        </importOrder>
                     </java>
                 </configuration>
                 <executions>
