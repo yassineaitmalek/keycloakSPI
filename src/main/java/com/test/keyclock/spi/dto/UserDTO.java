@@ -1,11 +1,7 @@
 package com.test.keyclock.spi.dto;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.test.keyclock.spi.models.constants.Gender;
-import java.time.LocalDate;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,7 +33,7 @@ public class UserDTO {
 	private String mobile;
 
 	@NotEmpty( message = "Gender is required" )
-	private Gender gender;
+	private String gender;
 
 	@NotEmpty( message = "Photo is required" )
 	private String photo;
@@ -48,15 +44,12 @@ public class UserDTO {
 	@NotEmpty( message = "Identifiant is required" )
 	private String identifiant;
 
-	@NotNull( message = "Birth date is required" )
-	@JsonFormat( pattern = "yyyy-MM-dd" )
-	private LocalDate birthDate;
+	@NotEmpty( message = "Birth date is required" )
+	private String birthDate;
 
-	@NotNull( message = "Date debut is required" )
-	@JsonFormat( pattern = "yyyy-MM-dd" )
-	private LocalDate dateDebut;
+	@NotEmpty( message = "Date debut is required" )
+	private String dateDebut;
 
-	@JsonFormat( pattern = "yyyy-MM-dd" )
-	private LocalDate dateFin;
+	private String dateFin;
 
 }

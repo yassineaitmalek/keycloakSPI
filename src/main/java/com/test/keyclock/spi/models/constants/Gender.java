@@ -2,7 +2,7 @@ package com.test.keyclock.spi.models.constants;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Arrays;
+import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -19,7 +19,7 @@ public enum Gender {
 	private final String value;
 
 	public static Gender of(String value) {
-		return Arrays.asList(values()).stream().filter(e -> !e.equals(NAN)).filter(e -> e.getValue().equals(value)).findFirst().orElseGet(() -> NAN);
+		return Stream.of(values()).filter(e -> !NAN.equals(e)).filter(e -> e.getValue().equals(value)).findFirst().orElseGet(() -> NAN);
 	}
 
 }

@@ -1,9 +1,7 @@
 package com.test.keyclock.spi.models;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.test.keyclock.spi.models.constants.Gender;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -44,13 +42,10 @@ public class UserDetails {
 
 	private String identifiant;
 
-	@JsonFormat( pattern = "yyyy-MM-dd" )
-	private LocalDate birthDate;
+	private String birthDate;
 
-	@JsonFormat( pattern = "yyyy-MM-dd" )
-	private LocalDate dateDebut;
+	private String dateDebut;
 
-	@JsonFormat( pattern = "yyyy-MM-dd" )
-	private LocalDate dateFin;
+	private String dateFin;
 
 }

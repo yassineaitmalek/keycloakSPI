@@ -43,13 +43,13 @@ public class UserMapper {
 		Objects.requireNonNull(userDTO);
 		Map<String, String> attributes = new HashMap<>();
 		attributes.put(MOBILE, userDTO.getMobile());
-		attributes.put(GENDER, Objects.nonNull(userDTO.getGender()) ? userDTO.getGender().getValue() : null);
+		attributes.put(GENDER, Gender.of(userDTO.getGender()).getValue());
 		attributes.put(PHOTO, userDTO.getPhoto());
 		attributes.put(MATRICULE, userDTO.getMatricule());
 		attributes.put(IDENTIFIANT, userDTO.getIdentifiant());
-		attributes.put(BIRTH_DATE, formatDate(userDTO.getBirthDate()));
-		attributes.put(DATE_DEBUT, formatDate(userDTO.getDateDebut()));
-		attributes.put(DATE_FIN, formatDate(userDTO.getDateFin()));
+		attributes.put(BIRTH_DATE, formatDateCheck(userDTO.getBirthDate()));
+		attributes.put(DATE_DEBUT, formatDateCheck(userDTO.getDateDebut()));
+		attributes.put(DATE_FIN, formatDateCheck(userDTO.getDateFin()));
 		return attributes;
 	}
 
@@ -60,22 +60,19 @@ public class UserMapper {
 		        Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().isEmpty() ? null : entry.getValue().get(0)));
 
 		return UserDetails.builder().id(userRepresentation.getId()).createdTimestamp(LocalDateTime.ofInstant(
-		        Instant.ofEpochMilli(userRepresentation.getCreatedTimestamp()), ZoneId.systemDefault()).toString()).username(userRepresentation.getUsername()).enabled(userRepresentation.isEnabled()).totp(userRepresentation.isTotp()).emailVerified(userRepresentation.isEmailVerified()).firstName(userRepresentation.getFirstName()).lastName(userRepresentation.getLastName()).email(userRepresentation.getEmail()).mobile(attributes.get(MOBILE)).gender(Gender.of(attributes.get(GENDER))).photo(attributes.get(PHOTO)).matricule(attributes.get(MATRICULE)).identifiant(attributes.get(IDENTIFIANT)).birthDate(parseDate(attributes.get(BIRTH_DATE))).dateDebut(parseDate(attributes.get(DATE_DEBUT))).dateFin(parseDate(attributes.get(DATE_FIN))).build();
+		        Instant.ofEpochMilli(userRepresentation.getCreatedTimestamp()), ZoneId.systemDefault()).toString()).username(userRepresentation.getUsername()).enabled(userRepresentation.isEnabled()).totp(userRepresentation.isTotp()).emailVerified(userRepresentation.isEmailVerified()).firstName(userRepresentation.getFirstName()).lastName(userRepresentation.getLastName()).email(userRepresentation.getEmail()).mobile(attributes.get(MOBILE)).gender(Gender.of(attributes.get(GENDER))).photo(attributes.get(PHOTO)).matricule(attributes.get(MATRICULE)).identifiant(attributes.get(IDENTIFIANT)).birthDate(attributes.get(BIRTH_DATE)).dateDebut(attributes.get(DATE_DEBUT)).dateFin(attributes.get(DATE_FIN)).build();
 	}
 
-	private LocalDate parseDate(String dateStr) {
+	private String formatDateCheck(String dateStr) {
+		if ( Objects.isNull(dateStr) ) {
+			return null;
+		}
 		try {
-			return LocalDate.parse(dateStr);
+			LocalDate date = LocalDate.parse(dateStr);
+			return date.format(DateTimeFormatter.ofPattern(DATE_PATTERN));
 		} catch ( Exception e ) {
 			return null;
 		}
-	}
-
-	private String formatDate(LocalDate date) {
-		if ( Objects.isNull(date) ) {
-			return null;
-		}
-		return date.format(DateTimeFormatter.ofPattern(DATE_PATTERN));
 	}
 
 }

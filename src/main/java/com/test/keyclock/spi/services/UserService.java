@@ -10,13 +10,12 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.keycloak.credential.CredentialModel;
 import org.keycloak.models.GroupModel;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserCredentialManager;
+import org.keycloak.models.UserCredentialModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.UserProvider;
-import org.keycloak.models.credential.PasswordCredentialModel;
 import org.keycloak.models.utils.ModelToRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 
@@ -79,14 +78,8 @@ public class UserService {
 
 		UserMapper.getAttributes(userDTO).forEach(user::setSingleAttribute);
 
-		CredentialModel credentialModel = new CredentialModel();
-		credentialModel.setType(CredentialModel.PASSWORD);
-		credentialModel.setCreatedDate(System.currentTimeMillis());
-		credentialModel.setSecretData(userDTO.getPassword());
-
-		PasswordCredentialModel passwordCredentialModel = PasswordCredentialModel.createFromCredentialModel(
-		        credentialModel);
-		userCredentialManager.updateCredential(realmModel, user, passwordCredentialModel);
+		userCredentialManager.updateCredential(
+		        realmModel, user, UserCredentialModel.password(userDTO.getPassword(), false));
 
 		UserRepresentation userRepresentation = ModelToRepresentation.toRepresentation(sessionWrapper.getSession(), realmModel, user);
 
