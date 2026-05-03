@@ -1,11 +1,16 @@
 package com.test.keyclock.spi.resources;
 
 
+import com.test.keyclock.spi.dto.UserDTO;
 import com.test.keyclock.spi.security.SecurityCheck;
 import com.test.keyclock.spi.services.KeycloakSessionWrapper;
 import com.test.keyclock.spi.services.UserService;
 import java.util.HashSet;
+import javax.validation.Valid;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -36,6 +41,15 @@ public class UsersResource implements RealmResourceProvider, AbstractResource {
 		return this;
 	}
 
+	@POST
+	@Path( SUB_PATH )
+	@Consumes( MediaType.APPLICATION_JSON )
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response createUser(@Valid UserDTO userDTO) {
+		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
+		return created(() -> userService.createUser(sessionWrapper, userDTO));
+	}
+
 	@GET
 	@Path( SUB_PATH + "/{id}" )
 	@Produces( MediaType.APPLICATION_JSON )
@@ -46,6 +60,30 @@ public class UsersResource implements RealmResourceProvider, AbstractResource {
 		securityCheck.shouldAuthenticate();
 		securityCheck.hasAllRoles(new HashSet<>());
 		return ok(() -> userService.getById(sessionWrapper, id));
+	}
+
+	@GET
+	@Path( SUB_PATH + "/{id}/representation" )
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response getUserRepresentation(@PathParam( "id" ) String id) {
+		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
+		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
+		securityCheck.logUser();
+		securityCheck.shouldAuthenticate();
+		securityCheck.hasAllRoles(new HashSet<>());
+		return ok(() -> userService.getRepresentationById(sessionWrapper, id));
+	}
+
+	@DELETE
+	@Path( SUB_PATH + "/{id}" )
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response deleteUser(@PathParam( "id" ) String id) {
+		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
+		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
+		securityCheck.logUser();
+		securityCheck.shouldAuthenticate();
+		securityCheck.hasAllRoles(new HashSet<>());
+		return noContent(() -> userService.deleteById(sessionWrapper, id));
 	}
 
 }

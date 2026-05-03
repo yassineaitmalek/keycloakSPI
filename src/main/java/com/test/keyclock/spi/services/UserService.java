@@ -2,16 +2,20 @@ package com.test.keyclock.spi.services;
 
 
 import com.test.keyclock.spi.dto.UserDTO;
+import com.test.keyclock.spi.mappers.UserMapper;
 import com.test.keyclock.spi.models.UserDetails;
 import com.test.keyclock.spi.security.SecurityCheck;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.keycloak.credential.CredentialModel;
-import org.keycloak.models.*;
+import org.keycloak.models.GroupModel;
+import org.keycloak.models.RealmModel;
+import org.keycloak.models.UserCredentialManager;
+import org.keycloak.models.UserModel;
+import org.keycloak.models.UserProvider;
 import org.keycloak.models.credential.PasswordCredentialModel;
 import org.keycloak.models.utils.ModelToRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -34,20 +38,22 @@ public class UserService {
 	}
 
 	public UserDetails getById(KeycloakSessionWrapper sessionWrapper, String id) {
-		Objects.requireNonNull(id);
+		UserRepresentation userRepresentation = getRepresentationById(sessionWrapper, id);
+		return UserMapper.toUserDetails(userRepresentation);
+	}
+
+	public UserRepresentation getRepresentationById(KeycloakSessionWrapper sessionWrapper, String id) {
+		Objects.requireNonNull(id, "User ID cannot be null");
 		RealmModel realmModel = sessionWrapper.getRealmModel();
 		UserProvider userProvider = sessionWrapper.getUserProvider();
 		UserModel userModel = userProvider.getUserById(id, realmModel);
+		return ModelToRepresentation.toRepresentation(sessionWrapper.getSession(), realmModel, userModel);
 
-		UserRepresentation userRepresentation = ModelToRepresentation.toRepresentation(
-		        sessionWrapper.getSession(), realmModel, userModel
-		);
-
-		return convert(userRepresentation);
 	}
 
 	public UserDetails getCurrentUser(SecurityCheck security) {
-		return convert(security.getCurrentUser());
+
+		return UserMapper.toUserDetails(security.getCurrentUserRepresentation());
 	}
 
 	public void deleteById(KeycloakSessionWrapper sessionWrapper, String id) {
@@ -71,9 +77,7 @@ public class UserService {
 		user.setFirstName(userDTO.getFirstName());
 		user.setLastName(userDTO.getLastName());
 
-		user.setAttribute("mobile", Arrays.asList(userDTO.getMobile()));
-		user.setAttribute("birthDate", Arrays.asList(userDTO.getBirthDate().toString()));
-		user.setAttribute("gender", Arrays.asList(userDTO.getGender().toString()));
+		UserMapper.getAttributes(userDTO).forEach(user::setSingleAttribute);
 
 		CredentialModel credentialModel = new CredentialModel();
 		credentialModel.setType(CredentialModel.PASSWORD);
@@ -81,23 +85,12 @@ public class UserService {
 		credentialModel.setSecretData(userDTO.getPassword());
 
 		PasswordCredentialModel passwordCredentialModel = PasswordCredentialModel.createFromCredentialModel(
-		        credentialModel
-		);
+		        credentialModel);
 		userCredentialManager.updateCredential(realmModel, user, passwordCredentialModel);
 
-		UserRepresentation userRepresentation = ModelToRepresentation.toRepresentation(
-		        sessionWrapper.getSession(), realmModel, user
-		);
+		UserRepresentation userRepresentation = ModelToRepresentation.toRepresentation(sessionWrapper.getSession(), realmModel, user);
 
-		return convert(userRepresentation);
-	}
-
-	public UserDetails convert(UserRepresentation userRepresentation) {
-		return UserDetails.builder().userRepresentation(userRepresentation)
-		        //        .mobile(userModel.getFirstAttribute("mobile"))
-		        //        .birthDate(LocalDate.parse(userModel.getFirstAttribute("birthDate")))
-		        //        .gender(Gender.of(userModel.getFirstAttribute("gender")))
-		        .build();
+		return UserMapper.toUserDetails(userRepresentation);
 	}
 
 	public List<UserDetails> getAllUsersInGroup(KeycloakSessionWrapper sessionWrapper, String groupId) {
@@ -106,7 +99,7 @@ public class UserService {
 		UserProvider userProvider = sessionWrapper.getUserProvider();
 		GroupModel group = realmModel.getGroupById(groupId);
 		Objects.requireNonNull(group, "Group not found for ID: " + groupId);
-		return userProvider.getGroupMembers(realmModel, group).stream().map(e -> ModelToRepresentation.toRepresentation(sessionWrapper.getSession(), realmModel, e)).map(this::convert).collect(Collectors.toList());
+		return userProvider.getGroupMembers(realmModel, group).stream().map(userModel -> ModelToRepresentation.toRepresentation(sessionWrapper.getSession(), realmModel, userModel)).map(UserMapper::toUserDetails).collect(Collectors.toList());
 	}
 
 }

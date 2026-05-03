@@ -10,16 +10,16 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Gender {
-	@JsonProperty( "Male" ) MALE("M"),
+	@JsonProperty( "M" ) MALE("M"),
 
-	@JsonProperty( "Female" ) FEMALE("F"),
+	@JsonProperty( "F" ) FEMALE("F"),
 
 	@JsonProperty( "NAN" ) NAN("NAN");
 
 	private final String value;
 
 	public static Gender of(String value) {
-		return Arrays.asList(values()).stream().filter(e -> !e.equals(NAN)).filter(e -> e.getValue().equals(value)).findFirst().orElse(NAN);
+		return Arrays.asList(values()).stream().filter(e -> !e.equals(NAN)).filter(e -> e.getValue().equals(value)).findFirst().orElseGet(() -> NAN);
 	}
 
 }

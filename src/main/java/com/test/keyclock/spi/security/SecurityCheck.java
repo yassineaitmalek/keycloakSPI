@@ -38,24 +38,26 @@ public class SecurityCheck {
 		log.info("Realm roles: {}", getCurrentUserRolesString());
 	}
 
-	public UserRepresentation getCurrentUser() {
+	public UserModel getCurrentUserModel() {
 		AuthResult authResult = sessionWrapper.getAuthResult();
 		if ( Objects.isNull(authResult) ) {
-			new NotAuthorizedException("there is no current user");
+			throw new NotAuthorizedException("there is no current user");
 		}
-		RealmModel realmModel = sessionWrapper.getRealmModel();
 		UserModel userModel = authResult.getUser();
+		Objects.requireNonNull(userModel, "Current user model cannot be null");
+		return userModel;
+
+	}
+
+	public UserRepresentation getCurrentUserRepresentation() {
+		RealmModel realmModel = sessionWrapper.getRealmModel();
+		UserModel userModel = getCurrentUserModel();
 		return ModelToRepresentation.toRepresentation(sessionWrapper.getSession(), realmModel, userModel);
 	}
 
 	public Set<RoleRepresentation> getCurrentUserRoles() {
-		AuthResult authResult = sessionWrapper.getAuthResult();
-		if ( Objects.isNull(authResult) ) {
-			new NotAuthorizedException("there is no current user");
-		}
-		RealmModel realmModel = sessionWrapper.getRealmModel();
-		UserModel userModel = authResult.getUser();
-		return Optional.ofNullable(userModel).map(UserModel::getRealmRoleMappings).orElseGet(Collections::emptySet).stream().map(ModelToRepresentation::toRepresentation).collect(Collectors.toSet());
+		UserModel userModel = getCurrentUserModel();
+		return Optional.ofNullable(userModel.getRealmRoleMappings()).orElseGet(Collections::emptySet).stream().map(ModelToRepresentation::toRepresentation).collect(Collectors.toSet());
 	}
 
 	private Set<String> getCurrentUserRolesString() {

@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.keycloak.representations.idm.UserRepresentation;
 
 
 @Data
@@ -17,13 +16,41 @@ import org.keycloak.representations.idm.UserRepresentation;
 @AllArgsConstructor
 public class UserDetails {
 
-	private UserRepresentation userRepresentation;
+	private String id;
+
+	private String createdTimestamp;
+
+	private String username;
+
+	private boolean enabled;
+
+	private boolean totp;
+
+	private boolean emailVerified;
+
+	private String firstName;
+
+	private String lastName;
+
+	private String email;
 
 	private String mobile;
+
+	private Gender gender;
+
+	private String photo;
+
+	private String matricule;
+
+	private String identifiant;
 
 	@JsonFormat( pattern = "yyyy-MM-dd" )
 	private LocalDate birthDate;
 
-	private Gender gender;
+	@JsonFormat( pattern = "yyyy-MM-dd" )
+	private LocalDate dateDebut;
+
+	@JsonFormat( pattern = "yyyy-MM-dd" )
+	private LocalDate dateFin;
 
 }
