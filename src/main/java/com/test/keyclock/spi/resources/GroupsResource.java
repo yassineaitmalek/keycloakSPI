@@ -7,6 +7,7 @@ import com.test.keyclock.spi.services.KeycloakSessionWrapper;
 import java.util.HashSet;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -74,15 +75,40 @@ public class GroupsResource implements RealmResourceProvider, AbstractResource {
 	}
 
 	@GET
-	@Path( SUB_PATH + "/user/{id}" )
+	@Path( SUB_PATH + "/user/{userId}" )
 	@Produces( MediaType.APPLICATION_JSON )
-	public Response getUserGroups(@PathParam( "id" ) String id) {
+	public Response getUserGroups(@PathParam( "userId" ) String userId) {
+		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
+		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
+		securityCheck.logUser();
+		securityCheck.isTheRightUser(userId);
+		securityCheck.shouldAuthenticate();
+		securityCheck.hasAllRoles(new HashSet<>());
+		return ok(() -> groupService.getByUserId(sessionWrapper, userId));
+	}
+
+	@POST
+	@Path( SUB_PATH + "/join/{groupId}/user/{userId}" )
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response joinGroup(@PathParam( "groupId" ) String groupId, @PathParam( "userId" ) String userId) {
 		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
 		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
 		securityCheck.logUser();
 		securityCheck.shouldAuthenticate();
 		securityCheck.hasAllRoles(new HashSet<>());
-		return ok(() -> groupService.getByUserId(sessionWrapper, id));
+		return noContent(() -> groupService.joinUser(sessionWrapper, groupId, userId));
+	}
+
+	@POST
+	@Path( SUB_PATH + "/join/{groupId}/user/{userId}" )
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response unjoinGroup(@PathParam( "groupId" ) String groupId, @PathParam( "userId" ) String userId) {
+		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
+		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
+		securityCheck.logUser();
+		securityCheck.shouldAuthenticate();
+		securityCheck.hasAllRoles(new HashSet<>());
+		return noContent(() -> groupService.unjoinUser(sessionWrapper, groupId, userId));
 	}
 
 }

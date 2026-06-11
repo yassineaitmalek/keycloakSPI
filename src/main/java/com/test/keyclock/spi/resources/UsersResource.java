@@ -5,6 +5,9 @@ import com.test.keyclock.spi.dto.UserDTO;
 import com.test.keyclock.spi.security.SecurityCheck;
 import com.test.keyclock.spi.services.KeycloakSessionWrapper;
 import com.test.keyclock.spi.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.HashSet;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -22,6 +25,7 @@ import org.keycloak.services.resource.RealmResourceProvider;
 
 
 @RequiredArgsConstructor
+@Tag( name = "Users Resource", description = "Endpoints powered by Keycloak 9" )
 public class UsersResource implements RealmResourceProvider, AbstractResource {
 
 	private static final String SUB_PATH = "/users";
@@ -45,6 +49,8 @@ public class UsersResource implements RealmResourceProvider, AbstractResource {
 	@Path( SUB_PATH )
 	@Consumes( MediaType.APPLICATION_JSON )
 	@Produces( MediaType.APPLICATION_JSON )
+	@Operation( summary = "create a user", description = "Returns a created user" )
+	@ApiResponse( responseCode = "201", description = "User created successfully" )
 	public Response createUser(@Valid UserDTO userDTO) {
 		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
 		return created(() -> userService.createUser(sessionWrapper, userDTO));
@@ -57,6 +63,7 @@ public class UsersResource implements RealmResourceProvider, AbstractResource {
 		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
 		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
 		securityCheck.logUser();
+		securityCheck.isTheRightUser(id);
 		securityCheck.shouldAuthenticate();
 		securityCheck.hasAllRoles(new HashSet<>());
 		return ok(() -> userService.getById(sessionWrapper, id));
@@ -69,6 +76,7 @@ public class UsersResource implements RealmResourceProvider, AbstractResource {
 		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
 		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
 		securityCheck.logUser();
+		securityCheck.isTheRightUser(id);
 		securityCheck.shouldAuthenticate();
 		securityCheck.hasAllRoles(new HashSet<>());
 		return ok(() -> userService.getRepresentationById(sessionWrapper, id));
@@ -81,6 +89,7 @@ public class UsersResource implements RealmResourceProvider, AbstractResource {
 		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
 		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
 		securityCheck.logUser();
+		securityCheck.isTheRightUser(id);
 		securityCheck.shouldAuthenticate();
 		securityCheck.hasAllRoles(new HashSet<>());
 		return noContent(() -> userService.deleteById(sessionWrapper, id));

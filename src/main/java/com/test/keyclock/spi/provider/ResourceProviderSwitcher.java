@@ -3,6 +3,7 @@ package com.test.keyclock.spi.provider;
 
 import com.test.keyclock.spi.resources.GroupsResource;
 import com.test.keyclock.spi.resources.RolesResource;
+import com.test.keyclock.spi.resources.SwaggerResource;
 import com.test.keyclock.spi.resources.UsersResource;
 import com.test.keyclock.spi.services.GroupService;
 import com.test.keyclock.spi.services.RoleService;
@@ -31,6 +32,8 @@ public class ResourceProviderSwitcher implements RealmResourceProvider {
 				return new RolesResource(session, RoleService.getInstance());
 			case "groups":
 				return new GroupsResource(session, GroupService.getInstance());
+			case "swagger":
+				return new SwaggerResource(session);
 			default:
 				throw new RuntimeException("Resource not found: " + subPath);
 		}

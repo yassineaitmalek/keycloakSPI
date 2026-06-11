@@ -7,12 +7,16 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.PostConstruct;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.models.ClientModel;
+import org.keycloak.models.GroupModel;
 import org.keycloak.models.RealmModel;
+import org.keycloak.models.RoleModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.utils.ModelToRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -26,6 +30,10 @@ public class SecurityCheck {
 
 	private final KeycloakSessionWrapper sessionWrapper;
 
+	private UserModel userModel;
+
+	private Set<String> userRoles;
+
 	public void logUser() {
 		AuthResult authResult = sessionWrapper.getAuthResult();
 		String realmName = sessionWrapper.getRealmName();
@@ -35,38 +43,33 @@ public class SecurityCheck {
 			return;
 		}
 		log.info("{}, realm: {}, client: {}", authResult.getUser().getUsername(), realmName, clientId);
-		log.info("Realm roles: {}", getCurrentUserRolesString());
+		log.info("Realm roles: {}", userRoles);
 	}
 
-	public UserModel getCurrentUserModel() {
+	@PostConstruct
+	public void initCurrentUserModel() {
 		AuthResult authResult = sessionWrapper.getAuthResult();
 		if ( Objects.isNull(authResult) ) {
 			throw new NotAuthorizedException("there is no current user");
 		}
-		UserModel userModel = authResult.getUser();
-		Objects.requireNonNull(userModel, "Current user model cannot be null");
-		return userModel;
+
+		this.userModel = authResult.getUser();
+		this.userRoles = Optional.ofNullable(this.userModel).map(e -> Stream.concat(e.getRealmRoleMappings().stream(), e.getGroups().stream().map(GroupModel::getRoleMappings).flatMap(Set::stream)).distinct().map(RoleModel::getComposites).flatMap(Set::stream).collect(Collectors.toSet())
+
+		).orElseGet(Collections::emptySet).stream().map(ModelToRepresentation::toRepresentation).map(RoleRepresentation::getName).collect(Collectors.toSet());
 
 	}
 
 	public UserRepresentation getCurrentUserRepresentation() {
 		RealmModel realmModel = sessionWrapper.getRealmModel();
-		UserModel userModel = getCurrentUserModel();
+		Objects.requireNonNull(this.userModel);
+		Objects.requireNonNull(realmModel);
 		return ModelToRepresentation.toRepresentation(sessionWrapper.getSession(), realmModel, userModel);
-	}
 
-	public Set<RoleRepresentation> getCurrentUserRoles() {
-		UserModel userModel = getCurrentUserModel();
-		return Optional.ofNullable(userModel.getRealmRoleMappings()).orElseGet(Collections::emptySet).stream().map(ModelToRepresentation::toRepresentation).collect(Collectors.toSet());
-	}
-
-	private Set<String> getCurrentUserRolesString() {
-		return getCurrentUserRoles().stream().map(RoleRepresentation::getName).collect(Collectors.toSet());
 	}
 
 	public boolean hasAllRoles(Set<String> roles) {
 		Objects.requireNonNull(roles);
-		Set<String> userRoles = getCurrentUserRolesString();
 		boolean hasRoles = userRoles.containsAll(roles);
 		if ( !hasRoles ) {
 			throw new ForbiddenException("You do not have the required credentials for this action");
@@ -92,6 +95,13 @@ public class SecurityCheck {
 	public void shouldAuthenticate() {
 		if ( Objects.isNull(sessionWrapper.getAuthResult()) ) {
 			throw new NotAuthorizedException("token required");
+		}
+	}
+
+	public void isTheRightUser(String userId) {
+		Objects.requireNonNull(userId);
+		if ( !userModel.getId().equals(userId) ) {
+			throw new ForbiddenException("You do not have the required credentials for this action");
 		}
 	}
 

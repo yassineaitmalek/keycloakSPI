@@ -12,10 +12,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.keycloak.models.GroupModel;
 import org.keycloak.models.RealmModel;
+import org.keycloak.models.RoleModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.UserProvider;
 import org.keycloak.models.utils.ModelToRepresentation;
 import org.keycloak.representations.idm.GroupRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 
 
 @NoArgsConstructor( access = AccessLevel.PRIVATE )
@@ -76,7 +78,7 @@ public class GroupService {
 		return ModelToRepresentation.toRepresentation(groupModel, true);
 	}
 
-	public void removeUser(KeycloakSessionWrapper sessionWrapper, String groupId, String userId) {
+	public void unjoinUser(KeycloakSessionWrapper sessionWrapper, String groupId, String userId) {
 		Objects.requireNonNull(userId);
 		Objects.requireNonNull(groupId);
 		RealmModel realmModel = sessionWrapper.getRealmModel();
@@ -90,7 +92,7 @@ public class GroupService {
 		}
 	}
 
-	public void joinUser(KeycloakSessionWrapper sessionWrapper, String userId, String groupId) {
+	public void joinUser(KeycloakSessionWrapper sessionWrapper, String groupId, String userId) {
 		Objects.requireNonNull(userId);
 		Objects.requireNonNull(groupId);
 		RealmModel realmModel = sessionWrapper.getRealmModel();
@@ -102,6 +104,41 @@ public class GroupService {
 		if ( !user.isMemberOf(group) ) {
 			user.joinGroup(group);
 		}
+	}
+
+	public void assignRole(KeycloakSessionWrapper sessionWrapper, String groupId, String roleId) {
+		Objects.requireNonNull(roleId);
+		Objects.requireNonNull(groupId);
+		RealmModel realmModel = sessionWrapper.getRealmModel();
+		RoleModel role = realmModel.getRoleById(roleId);
+		Objects.requireNonNull(role, "Role not found with ID: " + roleId);
+		GroupModel group = realmModel.getGroupById(groupId);
+		Objects.requireNonNull(group, "Group not found for ID: " + groupId);
+		if ( !group.hasRole(role) ) {
+			group.grantRole(role);
+		}
+	}
+
+	public void revokeRole(KeycloakSessionWrapper sessionWrapper, String groupId, String roleId) {
+		Objects.requireNonNull(roleId);
+		Objects.requireNonNull(groupId);
+		RealmModel realmModel = sessionWrapper.getRealmModel();
+		RoleModel role = realmModel.getRoleById(roleId);
+		Objects.requireNonNull(role, "Role not found with ID: " + roleId);
+		GroupModel group = realmModel.getGroupById(groupId);
+		Objects.requireNonNull(group, "Group not found for ID: " + groupId);
+		if ( group.hasRole(role) ) {
+			group.deleteRoleMapping(role);
+		}
+	}
+
+	public Set<RoleRepresentation> getGroupRoles(KeycloakSessionWrapper sessionWrapper, String groupId) {
+
+		Objects.requireNonNull(groupId);
+		RealmModel realmModel = sessionWrapper.getRealmModel();
+		GroupModel group = realmModel.getGroupById(groupId);
+		Objects.requireNonNull(group, "Group not found for ID: " + groupId);
+		return Optional.ofNullable(group.getRoleMappings()).orElseGet(Collections::emptySet).stream().map(ModelToRepresentation::toRepresentation).collect(Collectors.toSet());
 	}
 
 }

@@ -2,13 +2,13 @@ package com.test.keyclock.spi.services;
 
 
 import com.test.keyclock.spi.dto.RoleDTO;
-import java.util.Collections;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.keycloak.models.GroupModel;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.RoleModel;
 import org.keycloak.models.UserModel;
@@ -42,7 +42,9 @@ public class RoleService {
 		RealmModel realmModel = sessionWrapper.getRealmModel();
 		UserProvider userProvider = sessionWrapper.getUserProvider();
 		UserModel userModel = userProvider.getUserById(userId, realmModel);
-		return Optional.ofNullable(userModel).map(UserModel::getRealmRoleMappings).orElseGet(Collections::emptySet).stream().map(ModelToRepresentation::toRepresentation).collect(Collectors.toSet());
+
+		return Stream.concat(userModel.getRealmRoleMappings().stream(), userModel.getGroups().stream().map(GroupModel::getRoleMappings).flatMap(Set::stream)).distinct().map(RoleModel::getComposites).flatMap(Set::stream).map(ModelToRepresentation::toRepresentation).collect(Collectors.toSet());
+
 	}
 
 	public RoleRepresentation create(KeycloakSessionWrapper sessionWrapper, RoleDTO dto) {

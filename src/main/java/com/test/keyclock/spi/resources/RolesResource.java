@@ -50,15 +50,16 @@ public class RolesResource implements RealmResourceProvider, AbstractResource {
 	}
 
 	@GET
-	@Path( SUB_PATH + "/user/{id}" )
+	@Path( SUB_PATH + "/user/{userId}" )
 	@Produces( MediaType.APPLICATION_JSON )
-	public Response getUserRoles(@PathParam( "id" ) String id) {
+	public Response getUserRoles(@PathParam( "userId" ) String userId) {
 		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
 		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
 		securityCheck.logUser();
+		securityCheck.isTheRightUser(userId);
 		securityCheck.shouldAuthenticate();
 		securityCheck.hasAllRoles(new HashSet<>());
-		return ok(() -> roleService.getByUserId(sessionWrapper, id));
+		return ok(() -> roleService.getByUserId(sessionWrapper, userId));
 	}
 
 	@GET
