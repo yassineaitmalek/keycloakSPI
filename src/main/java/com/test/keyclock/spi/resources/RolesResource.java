@@ -6,6 +6,7 @@ import com.test.keyclock.spi.services.KeycloakSessionWrapper;
 import com.test.keyclock.spi.services.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.HashSet;
 import javax.ws.rs.DELETE;
@@ -21,6 +22,7 @@ import org.keycloak.services.resource.RealmResourceProvider;
 
 
 @RequiredArgsConstructor
+@SecurityRequirement( name = "bearerAuth" )
 @Tag( name = "Roles Resource", description = "Endpoints powered by Keycloak 9" )
 public class RolesResource implements RealmResourceProvider, AbstractResource {
 

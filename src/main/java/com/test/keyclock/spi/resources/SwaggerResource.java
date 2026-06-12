@@ -8,14 +8,17 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.services.resource.RealmResourceProvider;
@@ -119,6 +122,43 @@ public class SwaggerResource implements RealmResourceProvider, AbstractResource 
 		reader.read(classes);
 
 		return reader.getOpenAPI();
+
+	}
+
+	/**
+	 * 2. Swagger UI Dashboard Base Entry Point
+	 */
+	@GET
+	@Path( SUB_PATH + "/ui" )
+	@Produces( MediaType.TEXT_HTML )
+	public Response getSwaggerUiHtml() {
+		InputStream is = getClass().getResourceAsStream("/theme/swagger-ui/index.html");
+		if ( is == null ) {
+			return Response.status(Response.Status.NOT_FOUND).build();
+		}
+		return Response.ok(is).build();
+	}
+
+	/**
+	 * 3. Static Asset Router (Serves CSS, JS, Images from inside your JAR)
+	 */
+	@GET
+	@Path( SUB_PATH + "/{asset: .+\\.(js|css|png|html|txt)}" )
+	public Response getSwaggerUiAsset(@PathParam( "asset" ) String asset) {
+		InputStream is = getClass().getResourceAsStream("/theme/swagger-ui/" + asset);
+		if ( is == null ) {
+			return Response.status(Response.Status.NOT_FOUND).build();
+		}
+
+		String mediaType = MediaType.APPLICATION_OCTET_STREAM;
+		if ( asset.endsWith(".js") )
+		    mediaType = "application/javascript";
+		else if ( asset.endsWith(".css") )
+		    mediaType = "text/css";
+		else if ( asset.endsWith(".png") )
+		    mediaType = "image/png";
+
+		return Response.ok(is).type(mediaType).build();
 	}
 
 }
