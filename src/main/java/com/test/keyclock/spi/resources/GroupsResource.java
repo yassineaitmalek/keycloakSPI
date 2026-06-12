@@ -4,6 +4,9 @@ package com.test.keyclock.spi.resources;
 import com.test.keyclock.spi.security.SecurityCheck;
 import com.test.keyclock.spi.services.GroupService;
 import com.test.keyclock.spi.services.KeycloakSessionWrapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.HashSet;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -19,6 +22,7 @@ import org.keycloak.services.resource.RealmResourceProvider;
 
 
 @RequiredArgsConstructor
+@Tag( name = "Groups Resource", description = "Endpoints powered by Keycloak 9" )
 public class GroupsResource implements RealmResourceProvider, AbstractResource {
 
 	private static final String SUB_PATH = "/groups";
@@ -41,6 +45,8 @@ public class GroupsResource implements RealmResourceProvider, AbstractResource {
 	@GET
 	@Path( SUB_PATH )
 	@Produces( MediaType.APPLICATION_JSON )
+	@Operation( summary = "get all groups", description = "Returns all groups" )
+	@ApiResponse( responseCode = "200", description = "Groups retrieved successfully" )
 	public Response getAllGroups() {
 		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
 		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
@@ -53,6 +59,8 @@ public class GroupsResource implements RealmResourceProvider, AbstractResource {
 	@GET
 	@Path( SUB_PATH + "/{id}" )
 	@Produces( MediaType.APPLICATION_JSON )
+	@Operation( summary = "get a group by id", description = "Returns a group" )
+	@ApiResponse( responseCode = "200", description = "Group retrieved successfully" )
 	public Response getGroupById(@PathParam( "id" ) String id) {
 		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
 		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
@@ -65,6 +73,8 @@ public class GroupsResource implements RealmResourceProvider, AbstractResource {
 	@DELETE
 	@Path( SUB_PATH + "/{id}" )
 	@Produces( MediaType.APPLICATION_JSON )
+	@Operation( summary = "delete a group by id", description = "Deletes a group" )
+	@ApiResponse( responseCode = "204", description = "Group deleted successfully" )
 	public Response deleteGroupById(@PathParam( "id" ) String id) {
 		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
 		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
@@ -77,6 +87,8 @@ public class GroupsResource implements RealmResourceProvider, AbstractResource {
 	@GET
 	@Path( SUB_PATH + "/user/{userId}" )
 	@Produces( MediaType.APPLICATION_JSON )
+	@Operation( summary = "get groups for a user", description = "Returns groups for a specific user" )
+	@ApiResponse( responseCode = "200", description = "User groups retrieved successfully" )
 	public Response getUserGroups(@PathParam( "userId" ) String userId) {
 		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
 		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
@@ -90,6 +102,8 @@ public class GroupsResource implements RealmResourceProvider, AbstractResource {
 	@POST
 	@Path( SUB_PATH + "/join/{groupId}/user/{userId}" )
 	@Produces( MediaType.APPLICATION_JSON )
+	@Operation( summary = "join a group", description = "Joins a group" )
+	@ApiResponse( responseCode = "204", description = "Group joined successfully" )
 	public Response joinGroup(@PathParam( "groupId" ) String groupId, @PathParam( "userId" ) String userId) {
 		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
 		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
@@ -102,6 +116,8 @@ public class GroupsResource implements RealmResourceProvider, AbstractResource {
 	@POST
 	@Path( SUB_PATH + "/join/{groupId}/user/{userId}" )
 	@Produces( MediaType.APPLICATION_JSON )
+	@Operation( summary = "unjoin a group", description = "Unjoins a group" )
+	@ApiResponse( responseCode = "204", description = "Group unjoined successfully" )
 	public Response unjoinGroup(@PathParam( "groupId" ) String groupId, @PathParam( "userId" ) String userId) {
 		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
 		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);

@@ -59,6 +59,8 @@ public class UsersResource implements RealmResourceProvider, AbstractResource {
 	@GET
 	@Path( SUB_PATH + "/{id}" )
 	@Produces( MediaType.APPLICATION_JSON )
+	@Operation( summary = "get a user by id", description = "Returns a user" )
+	@ApiResponse( responseCode = "200", description = "User retrieved successfully" )
 	public Response getUser(@PathParam( "id" ) String id) {
 		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
 		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
@@ -72,6 +74,8 @@ public class UsersResource implements RealmResourceProvider, AbstractResource {
 	@GET
 	@Path( SUB_PATH + "/{id}/representation" )
 	@Produces( MediaType.APPLICATION_JSON )
+	@Operation( summary = "get a user representation by id", description = "Returns a user representation" )
+	@ApiResponse( responseCode = "200", description = "User representation retrieved successfully" )
 	public Response getUserRepresentation(@PathParam( "id" ) String id) {
 		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
 		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
@@ -85,6 +89,8 @@ public class UsersResource implements RealmResourceProvider, AbstractResource {
 	@DELETE
 	@Path( SUB_PATH + "/{id}" )
 	@Produces( MediaType.APPLICATION_JSON )
+	@Operation( summary = "delete a user by id", description = "Deletes a user" )
+	@ApiResponse( responseCode = "204", description = "User deleted successfully" )
 	public Response deleteUser(@PathParam( "id" ) String id) {
 		KeycloakSessionWrapper sessionWrapper = new KeycloakSessionWrapper(session);
 		SecurityCheck securityCheck = new SecurityCheck(sessionWrapper);
