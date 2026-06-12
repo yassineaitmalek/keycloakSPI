@@ -46,7 +46,7 @@ public class SwaggerResource implements RealmResourceProvider, AbstractResource 
 		//
 	}
 
-	// /auth/realms/{realm}/{ID}/roles
+	// /auth/realms/{realm}/{ID}/swagger
 	@Override
 	public RealmResourceProvider getResource() {
 		return this;
@@ -54,7 +54,7 @@ public class SwaggerResource implements RealmResourceProvider, AbstractResource 
 
 	private OpenAPI createOpenApi(String api) {
 		OpenAPI openApi = new OpenAPI();
-		openApi.info(new Info().title(TITLE).version(VERSION).description(api + " Keycloak 9 Extension API contract")).addSecurityItem(securityRequirement()).components(components());
+		openApi.info(new Info().title(TITLE).version(VERSION).description(api + " Keycloak 9 Extension API contract")).servers(servers()).addSecurityItem(securityRequirement()).components(components());
 		return openApi;
 	}
 
@@ -73,7 +73,10 @@ public class SwaggerResource implements RealmResourceProvider, AbstractResource 
 	}
 
 	private SecurityScheme securityScheme() {
-		return new SecurityScheme().name(SECURITY_SCHEME_NAME).type(SecurityScheme.Type.HTTP).scheme(SECURITY_SCHEME).bearerFormat(SECURITY_BEARER_FORMAT);
+		SecurityScheme scheme = new SecurityScheme().name(SECURITY_SCHEME_NAME).scheme(SECURITY_SCHEME).bearerFormat(SECURITY_BEARER_FORMAT);
+		scheme.type(SecurityScheme.Type.HTTP);
+		scheme.addExtension("type", "http");
+		return scheme;
 	}
 
 	@GET

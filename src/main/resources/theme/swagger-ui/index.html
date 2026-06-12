@@ -10,31 +10,65 @@
   <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />
 </head>
-<script>
-  window.onload = function () {
-    const ui = SwaggerUIBundle({
-      // Adding a leading slash forces it to start from the domain root (localhost:8080/)
-      url: "/auth/realms/portail-digital/test-multiple-providers/swagger/json",
-      dom_id: '#swagger-ui',
-      deepLinking: true,
-      presets: [
-        SwaggerUIBundle.presets.apis,
-        SwaggerUIStandalonePreset
-      ],
-      plugins: [
-        SwaggerUIBundle.plugins.DownloadUrl
-      ],
-      layout: "StandaloneLayout"
-    });
-    window.ui = ui;
-  };
-</script>
+
 
 <body>
   <div id="swagger-ui"></div>
   <script src="./swagger-ui-bundle.js" charset="UTF-8"> </script>
   <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
   <!-- <script src="./swagger-initializer.js" charset="UTF-8"> </script> -->
+
+  <script>
+    window.onload = function () {
+      const currentPath = window.location.pathname;
+      // If URL ends in /ui, basePath becomes everything up to that slash
+      const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+
+      // CORRECTED TARGET: Combines base path directly with /json endpoint
+      const jsonEndpoint = `${basePath}/json`;
+
+      console.log("Fetching contract configuration from:", jsonEndpoint);
+
+      fetch(jsonEndpoint)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP Error status returned from Keycloak backend: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Explicitly overwrite the buggy backend uppercase "HTTP" type to valid lowercase "http"
+          if (data.components && data.components.securitySchemes && data.components.securitySchemes.bearerAuth) {
+            data.components.securitySchemes.bearerAuth.type = "http";
+          }
+
+          // Mount the functional corrected configuration layout engine directly into Swagger UI
+          const ui = SwaggerUIBundle({
+            spec: data,
+            dom_id: '#swagger-ui',
+            deepLinking: true,
+            presets: [
+              SwaggerUIBundle.presets.apis,
+              SwaggerUIStandalonePreset
+            ],
+            plugins: [
+              SwaggerUIBundle.plugins.DownloadUrl
+            ],
+            layout: "StandaloneLayout"
+          });
+          window.ui = ui;
+        })
+        .catch(error => {
+          console.error("Swagger Initialization Error Handler caught exception:", error);
+          document.getElementById('swagger-ui').innerHTML =
+            `<div style="color:red; padding:20px; font-family:sans-serif;">
+              <h3>Failed to load API specification context</h3>
+              <p>${error.message}</p>
+              <p>Verify that the endpoint at <a href="${jsonEndpoint}">${jsonEndpoint}</a> returns valid JSON.</p>
+             </div>`;
+        });
+    };
+  </script>
 </body>
 
 </html>
